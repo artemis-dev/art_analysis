@@ -23,7 +23,7 @@ fi
 username=$1
 userdir=$artemis_dir/user/$username
 
-alias acd="cd ${ARTEMIS_WORKDIR}"
+alias acd='cd ${ARTEMIS_WORKDIR}'
 
 export ARTEMIS_USER=$username
 export ARTEMIS_WORKDIR=$userdir
