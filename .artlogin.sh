@@ -19,6 +19,17 @@ if [ x$ART_USER_REPOS = x"" ] ; then
 else
     reposdir=${ART_USER_REPOS}
 fi    
+
+if [ -z ${ART_DATA_DIR+x} ]; then
+    echo " set ART_DATA_DIR to point the data directory"
+    return 1
+fi
+
+if [ -z ${ART_SHARE_DIR+x} ]; then
+    echo " set ART_SHARE_DIR to pint the directory contains artemis-share source"
+    return 1
+fi
+
     
 username=$1
 userdir=$artemis_dir/user/$username
@@ -30,6 +41,8 @@ export ARTEMIS_WORKDIR=$userdir
 
 if [ -d $userdir ] ; then
     cd $userdir
+    export ART_USER_FULLNAME="`git config user.name`"
+    export ART_USER_EMAIL=`git config user.email`
     return 0
 #    exec zsh
 #    exit 0
@@ -58,10 +71,23 @@ done
 
 git clone $reposdir $userdir
 cd $userdir
+yes '' | git flow init > /dev/null
 git submodule init
 git submodule update
 
-git config user.name "$username"
+while true; do
+    echo -n "input fullname: "
+    read fullname
+    echo -n "OK? (y/n): "
+    read answer
+    case $answer in
+	y)
+	    break
+	    ;;
+    esac
+done
+
+git config user.name "$fullname"
 
 while true; do
     echo -n "input email address: "
@@ -76,6 +102,27 @@ while true; do
 done
 
 git config user.email "$email"
+
+if [ -z ${ART_DATA_DIR+x} ]; then
+else
+    if [ -d ${ART_DATA_DIR} ]; then
+	ln -s $ART_DATA_DIR ridf
+	echo symbolic link ridf to directory ${ART_DATA_DIR} created
+    else
+	echo Warning: directory ${ART_DATA_DIR} does not exist
+    fi
+fi
+
+ln -s $ART_SHARE_DIR share
+
+echo -n "compiling sources .."
+pushd src >> /dev/null && make -j > compile.log 2>&1l && popd >> /dev/null
+if [ "$?" != "0" ]; then
+echo failed
+echo please check src/compile.log
+else
+echo done
+fi
 
 cat <<EOF
 
