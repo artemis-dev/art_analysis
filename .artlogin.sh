@@ -104,6 +104,7 @@ export ART_USER_EMAIL=`git config user.email`
 
 
 if [ -z ${ART_DATA_DIR+x} ]; then
+    echo ""
 else
     if [ -d ${ART_DATA_DIR} ]; then
 	ln -s $ART_DATA_DIR rawdata
