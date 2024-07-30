@@ -25,10 +25,6 @@ if [ -z ${ART_DATA_DIR+x} ]; then
     return 1
 fi
 
-if [ -z ${ART_SHARE_DIR+x} ]; then
-    echo " set ART_SHARE_DIR to pint the directory contains artemis-share source"
-    return 1
-fi
 
     
 username=$1
@@ -103,17 +99,22 @@ done
 
 git config user.email "$email"
 
+export ART_USER_FULLNAME="`git config user.name`"
+export ART_USER_EMAIL=`git config user.email`
+
+
 if [ -z ${ART_DATA_DIR+x} ]; then
 else
     if [ -d ${ART_DATA_DIR} ]; then
-	ln -s $ART_DATA_DIR ridf
+	ln -s $ART_DATA_DIR rawdata
 	echo symbolic link ridf to directory ${ART_DATA_DIR} created
     else
 	echo Warning: directory ${ART_DATA_DIR} does not exist
     fi
 fi
 
-ln -s $ART_SHARE_DIR share
+
+
 
 echo -n "compiling sources .."
 pushd src >> /dev/null && make -j > compile.log 2>&1l && popd >> /dev/null
